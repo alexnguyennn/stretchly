@@ -2,6 +2,7 @@ const {
   app, nativeTheme, BrowserWindow, Menu, ipcMain,
   shell, dialog, globalShortcut, Tray
 } = require('electron')
+const fs = require('fs');
 
 const path = require('path')
 const i18next = require('i18next')
@@ -38,6 +39,7 @@ const BreaksPlanner = require('./breaksPlanner')
 const AppIcon = require('./utils/appIcon')
 const { UntilMorning } = require('./utils/untilMorning')
 const Command = require('./utils/commands')
+const StatusMessages = require("./utils/statusMessages");
 
 let microbreakIdeas
 let breakIdeas
@@ -72,6 +74,16 @@ global.shared = {
 const commandLineArguments = process.argv
   .slice(app.isPackaged ? 1 : 2)
 
+app.on('first-instance-ack', 
+    (event, ackData) => {
+  // Print out the ack received from the first instance.
+  // Note this event handler must come before the requestSingleInstanceLock call.
+  // Expected output: '{"myAckKey":"myAckValue"}'
+  console.log(JSON.stringify(ackData))
+})
+
+
+
 const gotTheLock = app.requestSingleInstanceLock(commandLineArguments)
 
 if (!gotTheLock) {
@@ -79,7 +91,12 @@ if (!gotTheLock) {
   cmd.runOrForward()
   app.quit()
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory, commandLineArguments) => {
+  app.on('second-instance', (
+      event,
+      commandLine,
+      workingDirectory,
+      commandLineArguments,
+  ) => {
     log.info(`Stretchly: arguments received from second instance: ${commandLineArguments}`)
     const cmd = new Command(commandLineArguments, app.getVersion())
 
@@ -149,9 +166,42 @@ if (!gotTheLock) {
         log.info('Stretchly: open Preferences window (requested by second instance)')
         createPreferencesWindow()
         break
+      
+      case 'status':
+        // TODO: test
+          //  TODO: make this print in second process instead
+        log.info('Stretchly: show status output (requested by second instance)')
+        const StatusMessages = require('./utils/statusMessages')
+        let trayMessage = i18next.t('main.toolTipHeader')
+        const message = new StatusMessages({
+          breakPlanner,
+          settings
+        }).trayMessage
+        if (message !== '') {
+          trayMessage += '\n\n' + message
+          log.info(trayMessage)
+          fs.writeFile(
+              '/Users/alex/.tmpdisk/rtmp/stretchly-status',
+              trayMessage,
+              err => {
+                if (err) {
+                  console.error(err);
+                }
+            // file written successfully
+              }
+          );          
+        }
+
+        break
+      
     }
   })
 }
+
+
+
+
+
 
 app.on('ready', initialize)
 app.on('window-all-closed', () => {

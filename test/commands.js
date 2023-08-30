@@ -183,3 +183,22 @@ describe('commands', () => {
     cmd.waitToMs(null).should.be.equal(-1)
   })
 })
+
+it('parses status as a valid command', () => {
+  const input = ['status']
+  const cmd = new Command(input, '1.2.3')
+  cmd.command.should.be.equal('status')
+})
+
+/*
+
+// TODO: check help status/output
+// TODO: set up/ stub status and check output is as expected
+
+*/
+
+
+it('hasSupportedCommand is false with status command', () => {
+  const cmd = new Command(['status'], '1.2.3')
+  cmd.hasSupportedCommand.should.be.equal(false)
+})
