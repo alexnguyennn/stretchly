@@ -11,7 +11,7 @@
     "dev": "cross-env NODE_ENV=development electron ./app --enable-logging --remote-debugging-port=9222",
     "postinstall": "electron-builder install-app-deps",
     "pack": "electron-builder build --dir",
-    "dist": "electron-builder build --x64 --ia32",
+    "dist": "electron-builder build",
     "test": "mocha test",
     "test-single": "mocha $1",
     "tdd": "mocha --watch test",

@@ -197,7 +197,6 @@ it('parses status as a valid command', () => {
 
 */
 
-
 it('hasSupportedCommand is false with status command', () => {
   const cmd = new Command(['status'], '1.2.3')
   cmd.hasSupportedCommand.should.be.equal(false)

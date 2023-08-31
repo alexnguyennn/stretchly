@@ -1,7 +1,5 @@
 const { UntilMorning } = require('./untilMorning')
 const log = require('electron-log')
-const i18next = require("i18next");
-const StatusMessages = require("./statusMessages");
 
 const allOptions = {
   title: {
@@ -67,7 +65,7 @@ const allCommands = {
   preferences: {
     description: 'Open Preferences window'
   },
-  
+
   status: {
     description: 'Show tooltip text'
   }
@@ -185,10 +183,10 @@ class Command {
         this.ver()
         break
 
-      case 'status':
-        const fs = require('fs');
-        const fileName = "/Users/alex/.tmpdisk/rtmp/stretchly-status"
-/*        fs.watchFile(
+      case 'status': {
+        const fs = require('fs')
+        const fileName = '/Users/alex/.tmpdisk/rtmp/stretchly-status'
+        /*        fs.watchFile(
             fileName,
             {
               persistent: true
@@ -199,17 +197,16 @@ class Command {
                 log.info(
                     "The contents of the current file are:",
                     fs.readFileSync(fileName, "utf8")
-                ); 
+                );
               }
           })
           */
-        log.info("The contents of the current file are:",
-            fs.readFileSync(fileName, "utf8"))
-        log.info("finished watching file. exiting")
-        
-        break
-      
+        // log.info('The contents of the current file are:',
+        fs.readFileSync(fileName, 'utf8')
+        // log.info('finished watching file. exiting')
 
+        break
+      }
       default:
         if (this.hasSupportedCommand) {
           log.info(`Stretchly${this.isFirstInstance ? '' : ' 2'}: forwarding command '${this.command}' to the main instance`)
